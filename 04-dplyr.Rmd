@@ -92,25 +92,25 @@ To choose rows, use `filter()`:
 
 Filter the rows for entries in 1995
 
-```{r, purl = FALSE}
+```{r, eval=FALSE, purl = FALSE}
 filter(surveys, year == 1995)
 ```
 
 Filter the rows for all entries not in the year 1977
 
-```{r, purl = FALSE}
+```{r, eval=FALSE, purl = FALSE}
 filter(surveys, year != 1977)
 ```
 
 Filter the rows for entries in or after 1995 and for the species 'DL'
 
-```{r, purl = FALSE}
+```{r, eval=FALSE, purl = FALSE}
 filter(surveys, year >= 1995, species_id == 'NL')
 ```
 
 Filter the rows for entries in the genus 'Dipodomys' or 'Neotoma'. You can use '%in%' for this. 
 
-```{r, purl = FALSE}
+```{r, eval=FALSE, purl = FALSE}
 filter(surveys, genus %in% c("Dipodomys", "Neotoma"))
 ```
 
@@ -201,7 +201,7 @@ Note that the final data frame is the leftmost part of this expression.
 If you've now created a table you want to use or present
 outside of R, you can use 'write.csv'
 
-```{r, purl = FALSE}
+```{r, eval=FALSE, purl = FALSE}
 write.csv(surveys_sml, "surveys_small.csv", row.names=TRUE)
 ```
 
