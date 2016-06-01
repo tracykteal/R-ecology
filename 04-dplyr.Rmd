@@ -63,11 +63,82 @@ frame (`surveys`), and the subsequent arguments are the columns to keep.
 select(surveys, plot_id, species_id, weight)
 ```
 
+To select all the columns except a specific column, use the “-“ (subtraction) operator (also known as negative indexing)
+
+```{r, results = 'hide', purl = FALSE}
+select(surveys, -plot_id)
+```
+
+To select a range of columns by name, use the “:” (colon) operator
+
+```{r, results = 'hide', purl = FALSE}
+select(surveys, weight:hindfoot_length)
+```
+
+To select all columns that start with the character string “sl”, use the function starts_with()
+
+```{r, results = 'hide', purl = FALSE}
+select(surveys, starts_with("s"))
+```
+
+Some additional options to select columns based on a specific criteria include
+
+ends_with() = Select columns that end with a character string
+contains() = Select columns that contain a character string
+matches() = Select columns that match a regular expression
+one_of() = Select columns names that are from a group of names
+
 To choose rows, use `filter()`:
+
+Filter the rows for entries in 1995
 
 ```{r, purl = FALSE}
 filter(surveys, year == 1995)
 ```
+
+Filter the rows for all entries not in the year 1977
+
+```{r, purl = FALSE}
+filter(surveys, year != 1977)
+```
+
+Filter the rows for entries in or after 1995 and for the species 'DL'
+
+```{r, purl = FALSE}
+filter(surveys, year >= 1995, species_id == 'NL')
+```
+
+Filter the rows for entries in the genus 'Dipodomys' or 'Neotoma'. You can use '%in%' for this. 
+
+```{r, purl = FALSE}
+filter(surveys, genus %in% c("Dipodomys", "Neotoma"))
+```
+
+
+> ### CHALLENGE
+
+
+> Create a new data frame that has just the rows that have species_id 'DO' 
+
+<!---
+```{r, eval=FALSE, purl=FALSE}
+## Answer
+df_do <- filter(surveys, species_id == "DO")
+# Check the dataframe
+head(df_do)
+```
+--->
+
+> Create a new data frame that has just the rows that have species_id 'DO' and the columns species_id and weight
+
+<!--
+```{r, eval=FALSE, purl=FALSE}
+## Answer
+df_dos <- select(df_do, species_id, weight)
+# Check the dataframe
+head(df_dos)
+```
+--->
 
 ### Pipes
 
@@ -89,6 +160,24 @@ surveys %>%
   select(species_id, sex, weight)
 ```
 
+You can also order the dataframe based on one or more columns, for instance order by sex 
+
+```{r, purl = FALSE}
+surveys %>%
+  filter(weight < 5) %>%
+  select(species_id, sex, weight) %>%
+  arrange(sex)
+```
+
+Or order first by one column and then by another
+```{r, purl = FALSE}
+surveys %>%
+  filter(weight < 5) %>%
+  select(species_id, sex, weight) %>%
+  arrange(sex, species_id)
+```
+
+
 In the above we use the pipe to send the `surveys` data set first through
 `filter`, to keep rows where `wgt` was less than 5, and then through `select` to
 keep the `species` and `sex` columns. When the data frame is being passed to the
@@ -101,24 +190,34 @@ could do so by assigning it a new name:
 ```{r, purl = FALSE}
 surveys_sml <- surveys %>%
   filter(weight < 5) %>%
-  select(species_id, sex, weight)
-
+  select(species_id, sex, weight) %>%
+  arrange(sex, species_id)
 surveys_sml
 ```
-
 Note that the final data frame is the leftmost part of this expression.
+
+### Writing data frames to csv
+
+If you've now created a table you want to use or present
+outside of R, you can use 'write.csv'
+
+```{r, purl = FALSE}
+write.csv(surveys_sml, "surveys_small.csv", row.names=TRUE)
+```
+
 
 > ### Challenge {.challenge}
 >
 >  Using pipes, subset the data to include individuals collected before 1995,
->  and retain the columns `year`, `sex`, and `weight.`
+>  and retain the columns `year`, `sex`, and `weight.` Arrange the table by year. 
 
 <!---
 ```{r, eval=FALSE, purl=FALSE}
 ## Answer
 surveys %>%
     filter(year < 1995) %>%
-    select(year, sex, weight)
+    select(year, sex, weight) %>%
+    arrange(year)
 ```
 --->
 
@@ -161,11 +260,15 @@ The `!` symbol negates it, so we're asking for everything that is not an `NA`.
 
 > ### Challenge {.challenge}
 >
->  Create a new dataframe from the survey data that meets the following
+>  Create a new dataframe 'hindfoot_df' from the survey data that meets the following
 >  criteria: contains only the `species_id` column and a column that contains 
 >  values that are half the `hindfoot_length` values (e.g. a new column
->  `hindfoot_half`). In this `hindfoot_half` column, there are no NA values
->  and all values are < 30.
+>  `hindfoot_half`). 
+
+> Now add the criteria that in the `hindfoot_half` column, there should be no NA values 
+
+> ### Bonus challenge {.challenge}
+Now add that all values for hindfoot_half should be < 30.
 >
 >  **Hint**: think about how the commands should be ordered to produce this data frame!
 
