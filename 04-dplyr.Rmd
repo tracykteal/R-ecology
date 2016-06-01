@@ -5,54 +5,51 @@ author: Data Carpentry contributors
 ---
 
 ```{r, echo=FALSE, purl=FALSE, message = FALSE}
-source("setup.R")
+
 surveys <- read.csv("data/portal_data_joined.csv")
 ```
 
 ------------
 
-# Data manipulation using dplyr
+# Data Manipulation using dplyr
 
 Bracket subsetting is handy, but it can be cumbersome and difficult to read,
 especially for complicated operations. Enter `dplyr`. `dplyr` is a package for
 making data manipulation easier.
 
 Packages in R are basically sets of additional functions that let you do more
-stuff in R. The functions we've been using, like `str()`, come built into R;
-packages give you access to more functions. You need to install a package and
-then load it to be able to use it.
+stuff. The functions we've been using so far, like `str()` or `data.frame()`,
+come built into R; packages give you access to more of them. Before you use a
+package for the first time you need to install it on your machine, and then you
+should to import it in every subsequent R session when you'll need it.
 
 ```{r, eval = FALSE, purl = FALSE}
-install.packages("dplyr") ## install
+install.packages("dplyr")
 ```
 
 You might get asked to choose a CRAN mirror -- this is basically asking you to
 choose a site to download the package from. The choice doesn't matter too much;
-I'd recommend choosing the RStudio mirror.
+we recommend the RStudio mirror.
 
 ```{r, message = FALSE, purl = FALSE}
-library("dplyr")          ## load
+library("dplyr")    ## load the package
 ```
 
-You only need to install a package once per computer, but you need to load it
-every time you open a new R session and want to use that package.
+## What is `dplyr`?
 
-## What is dplyr?
-
-The package `dplyr` is a fairly new (2014) package that tries to provide easy
-tools for the most common data manipulation tasks. It is built to work directly
-with data frames. The thinking behind it was largely inspired by the package
-`plyr` which has been in use for some time but suffered from being slow in some
-cases.` dplyr` addresses this by porting much of the computation to C++. An
-additional feature is the ability to work with data stored directly in an
-external database. The benefits of doing this are that the data can be managed
-natively in a relational database, queries can be conducted on that database,
-and only the results of the query returned.
+The package `dplyr` provides easy tools for the most common data manipulation
+tasks. It is built to work directly with data frames. The thinking behind it was
+largely inspired by the package `plyr` which has been in use for some time but
+suffered from being slow in some cases.` dplyr` addresses this by porting much
+of the computation to C++. An additional feature is the ability to work with
+data stored directly in an external database. The benefits of doing this are
+that the data can be managed natively in a relational database, queries can be
+conducted on that database, and only the results of the query returned.
 
 This addresses a common problem with R in that all operations are conducted in
 memory and thus the amount of data you can work with is limited by available
 memory. The database connections essentially remove that limitation in that you
-can have a database of many 100s GB, conduct queries on it directly and pull
+can have a database of many 100s GB, conduct queries on it directly, and pull
 back just what you need for analysis in R.
 
 ### Selecting columns and filtering rows
@@ -66,31 +63,120 @@ frame (`surveys`), and the subsequent arguments are the columns to keep.
 select(surveys, plot_id, species_id, weight)
 ```
 
+To select all the columns except a specific column, use the “-“ (subtraction) operator (also known as negative indexing)
+
+```{r, results = 'hide', purl = FALSE}
+select(surveys, -plot_id)
+```
+
+To select a range of columns by name, use the “:” (colon) operator
+
+```{r, results = 'hide', purl = FALSE}
+select(surveys, weight:hindfoot_length)
+```
+
+To select all columns that start with the character string “sl”, use the function starts_with()
+
+```{r, results = 'hide', purl = FALSE}
+select(surveys, starts_with("s"))
+```
+
+Some additional options to select columns based on a specific criteria include
+
+ends_with() = Select columns that end with a character string
+contains() = Select columns that contain a character string
+matches() = Select columns that match a regular expression
+one_of() = Select columns names that are from a group of names
+
 To choose rows, use `filter()`:
+
+Filter the rows for entries in 1995
 
 ```{r, purl = FALSE}
 filter(surveys, year == 1995)
 ```
 
+Filter the rows for all entries not in the year 1977
+
+```{r, purl = FALSE}
+filter(surveys, year != 1977)
+```
+
+Filter the rows for entries in or after 1995 and for the species 'DL'
+
+```{r, purl = FALSE}
+filter(surveys, year >= 1995, species_id == 'NL')
+```
+
+Filter the rows for entries in the genus 'Dipodomys' or 'Neotoma'. You can use '%in%' for this. 
+
+```{r, purl = FALSE}
+filter(surveys, genus %in% c("Dipodomys", "Neotoma"))
+```
+
+
+> ### CHALLENGE
+
+
+> Create a new data frame that has just the rows that have species_id 'DO' 
+
+<!---
+```{r, eval=FALSE, purl=FALSE}
+## Answer
+df_do <- filter(surveys, species_id == "DO")
+# Check the dataframe
+head(df_do)
+```
+--->
+
+> Create a new data frame that has just the rows that have species_id 'DO' and the columns species_id and weight
+
+<!--
+```{r, eval=FALSE, purl=FALSE}
+## Answer
+df_dos <- select(df_do, species_id, weight)
+# Check the dataframe
+head(df_dos)
+```
+--->
+
 ### Pipes
 
-But what if you wanted to select and filter? There are three ways to do this:
-use intermediate steps, nested functions, or pipes. With the intermediate steps,
-you essentially create a temporary data frame and use that as input to the next
-function. This can clutter up your workspace with lots of objects. You can also
-nest functions (i.e. one function inside of another).  This is handy, but can be
-difficult to read if too many functions are nested as the process from inside
-out. The last option, pipes, are a fairly recent addition to R. Pipes let you
-take the output of one function and send it directly to the next, which is
-useful when you need to many things to the same data set.  Pipes in R look like
-`%>%` and are made available via the `magrittr` package installed as
-part of `dplyr`.
+But what if you wanted to select and filter at the same time? There are three
+ways to do this: use intermediate steps, nested functions, or pipes. With the
+intermediate steps, you essentially create a temporary data frame and use that
+as input to the next function. This can clutter up your workspace with lots of
+objects. You can also nest functions (i.e. one function inside of another).
+This is handy, but can be difficult to read if too many functions are nested as
+the process from inside out. The last option, pipes, are a fairly recent
+addition to R. Pipes let you take the output of one function and send it
+directly to the next, which is useful when you need to many things to the same
+data set.  Pipes in R look like `%>%` and are made available via the `magrittr`
+package installed as part of `dplyr`.
 
 ```{r, purl = FALSE}
 surveys %>%
   filter(weight < 5) %>%
   select(species_id, sex, weight)
 ```
+
+You can also order the dataframe based on one or more columns, for instance order by sex 
+
+```{r, purl = FALSE}
+surveys %>%
+  filter(weight < 5) %>%
+  select(species_id, sex, weight) %>%
+  arrange(sex)
+```
+
+Or order first by one column and then by another
+```{r, purl = FALSE}
+surveys %>%
+  filter(weight < 5) %>%
+  select(species_id, sex, weight) %>%
+  arrange(sex, species_id)
+```
+
 
 In the above we use the pipe to send the `surveys` data set first through
 `filter`, to keep rows where `wgt` was less than 5, and then through `select` to
@@ -104,20 +190,42 @@ could do so by assigning it a new name:
 ```{r, purl = FALSE}
 surveys_sml <- surveys %>%
   filter(weight < 5) %>%
-  select(species_id, sex, weight)
-
+  select(species_id, sex, weight) %>%
+  arrange(sex, species_id)
 surveys_sml
 ```
+Note that the final data frame is the leftmost part of this expression.
+
+### Writing data frames to csv
+
+If you've now created a table you want to use or present
+outside of R, you can use 'write.csv'
+
+```{r, purl = FALSE}
+write.csv(surveys_sml, "surveys_small.csv", row.names=TRUE)
+```
+
 
 > ### Challenge {.challenge}
 >
-> Using pipes, subset the data to include rows before 1995. Retain columns
-> `year`, `sex`, and `weight.`
+>  Using pipes, subset the data to include individuals collected before 1995,
+>  and retain the columns `year`, `sex`, and `weight.` Arrange the table by year. 
+
+<!---
+```{r, eval=FALSE, purl=FALSE}
+## Answer
+surveys %>%
+    filter(year < 1995) %>%
+    select(year, sex, weight) %>%
+    arrange(year)
+```
+--->
+
 
 ### Mutate
 
 Frequently you'll want to create new columns based on the values in existing
-columns, for example to do unit conversions or find the ratio of values in two
+columns, for example to do unit conversions, or find the ratio of values in two
 columns. For this we'll use `mutate()`.
 
 To create a new column of weight in kg:
@@ -142,13 +250,38 @@ insert a `filter()` in this chain:
 
 ```{r, purl = FALSE}
 surveys %>%
-  mutate(weight_kg = weight / 1000) %>%
   filter(!is.na(weight)) %>%
+  mutate(weight_kg = weight / 1000) %>%
   head
 ```
 
 `is.na()` is a function that determines whether something is or is not an `NA`.
 The `!` symbol negates it, so we're asking for everything that is not an `NA`.
+
+> ### Challenge {.challenge}
+>
+>  Create a new dataframe 'hindfoot_df' from the survey data that meets the following
+>  criteria: contains only the `species_id` column and a column that contains 
+>  values that are half the `hindfoot_length` values (e.g. a new column
+>  `hindfoot_half`). 
+
+> Now add the criteria that in the `hindfoot_half` column, there should be no NA values 
+
+> ### Bonus challenge {.challenge}
+Now add that all values for hindfoot_half should be < 30.
+>
+>  **Hint**: think about how the commands should be ordered to produce this data frame!
+
+<!---
+```{r, eval=FALSE, purl=FALSE}
+## Answer
+surveys_hindfoot_half %>%
+    filter(!is.na(hindfoot_length)) %>%
+    mutate(hindfoot_half = hindfoot_length / 2) %>%
+    filter(hindfoot_half < 30) %>%
+    select(species_id, hindfoot_half)
+```
+--->
 
 ### Split-apply-combine data analysis and the summarize() function
 
@@ -165,7 +298,7 @@ surveys %>%
   tally()
 ```
 
-`group_by()` is often used together with `summarize()` which collapses each
+Here, `tally()` is the action applied to the groups created to `group_by()` and counts the total number of records for each category. `group_by()` is often used together with `summarize()` which collapses each
 group into a single-row summary of that group. So to view mean `weight` by sex:
 
 ```{r, purl = FALSE}
@@ -180,11 +313,11 @@ You can group by multiple columns too:
 surveys %>%
   group_by(sex, species_id) %>%
   summarize(mean_weight = mean(weight, na.rm = TRUE))
-
 ```
 
-Looks like most of these species were never weighed. We could then discard rows
-where `mean_weight` is `NaN` (`NaN` refers to "Not a Number") using `filter()`:
+It looks like most of these species were never weighed. We could then discard
+rows where `mean_weight` is `NaN` (`NaN` refers to "Not a Number") using
+`filter()`:
 
 ```{r, purl = FALSE}
 surveys %>%
@@ -193,7 +326,7 @@ surveys %>%
   filter(!is.nan(mean_weight))
 ```
 
-All of a sudden this isn't running of the screen anymore. That's because `dplyr`
+All of a sudden this isn't running off the screen anymore. That's because `dplyr`
 has changed our `data.frame` to a `tbl_df`. This is a data structure that's very
 similar to a data frame; for our purposes the only difference is that it won't
 automatically show tons of data going off the screen.
@@ -212,19 +345,50 @@ surveys %>%
 >
 > How many times was each `plot_type` surveyed?
 
+<!---
+```{r, echo=FALSE, purl=FALSE}
+## Answer
+surveys %>%
+    group_by(plot_type) %>%
+    tally
+```
+--->
 
 > ### Challenge {.challenge}
 >
 > Use `group_by()` and `summarize()` to find the mean, min, and max hindfoot
 > length for each species.
 
+<!---
+```{r, echo=FALSE, purl=FALSE}
+## Answer
+surveys %>%
+    filter(!is.na(hindfoot_length)) %>%
+    group_by(species_id) %>%
+    summarize(
+        mean_hindfoot_length = mean(hindfoot_length),
+        min_hindfoot_length = min(hindfoot_length),
+        max_hindfoot_length = max(hindfoot_length)
+    )
+```
+--->
 
 > ### Challenge {.challenge}
 >
 > What was the heaviest animal measured in each year? Return the columns `year`,
 > `genus`, `species`, and `weight`.
 
+<!---
+## Answer
+```{r, echo=FALSE, purl=FALSE}
+res <- surveys %>%
+    filter(!is.na(weight)) %>%
+    group_by(year) %>%
+    filter(weight == max(weight)) %>%
+    select(year, genus, species, weight) %>%
+    arrange(year)
+```
+--->
 
 [Handy dplyr cheatsheet](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
-
-*Much of this lesson was copied or adapted from Jeff Hollister's [materials](http://usepa.github.io/introR/2015/01/14/03-Clean/)*
+[PH525x series - Biomedical Data Science dplyr tutorial](http://genomicsclass.github.io/book/pages/dplyr_tutorial.html)
