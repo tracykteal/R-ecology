@@ -1,23 +1,24 @@
 ---
 layout: lesson
 root: .
-lastupdated: June 23, 2015
+lastupdated: March 21, 2016
 contributors: ["Sarah Supp", "John Blischak","Gavin Simpson","Tracy Teal","Greg Wilson","Diego Barneche"," Stephen Turner","Francois Michonneau"]
-maintainers: [""]
+maintainers: ["Francois Michonneau", "Auriel Fournier"]
 domain: Ecology
 topic: R for data analysis
 software: R
-dataurl:
+dataurl: http://dx.doi.org/10.6084/m9.figshare.1314459
 status: Teaching
+title: R for data analysis for Ecology
 ---
 
-#Data Carpentry {{ page.topic }} for {{ page.domain }}
-=======
+# Data Carpentry {{ page.title }}
+
 
 Data Carpentry's aim is to teach researchers basic concepts, skills,
 and tools for working with data so that they can get more done in less
 time, and with less pain. The lessons below were designed for those interested
-in working with {{page.domain %}} data in {{page.topic %}}.
+in working with {{page.domain}} data in {{page.topic}}.
 
 This is an introduction to R designed for participants with no programming
 experience. These lessons can be taught in 3/4 of a day. They start with some
@@ -27,10 +28,10 @@ add/remove rows and columns, and finish with how to calculate summary statistics
 for each level and a very brief introduction to plotting.
 
 
-**Content Contributors: {{page.contributors | join: ', ' %}}**
+**Content Contributors: {{page.contributors | join: ', '}}**
 
 
-**Lesson Maintainers: {{page.maintainers | join: ', ' %}}**
+**Lesson Maintainers: {{page.maintainers | join: ', '}}**
 
 
 **Lesson status: {{ page.status }}**
@@ -48,14 +49,16 @@ for each level and a very brief introduction to plotting.
 3. [Lesson 02 Starting with data](02-starting-with-data.html)
 4. [Lesson 03 Introducing `data.frame`](03-data-frames.html)
 5. [Lesson 04 Aggregating and analyzing data with dplyr](04-dplyr.html)
-6. [Lesson 07 Data visualisation with ggplot2](05-visualisation-ggplot2.html) 
+6. [Lesson 05 Data visualization with ggplot2](05-visualization-ggplot2.html)
 7. [Lesson 06 R and SQL](06-r-and-sql.html)
 
 
 ## Data
 
-Data files for the lesson are available here: ({{page.dataurl %}})[{{page.dataurl %}}]
+Data files for the lesson are available here:
+[{{page.dataurl}}]({{page.dataurl}})
 
+Please download the *\*.csv* (Comma Separated Value) files: *species.csv*, *plots.csv*, *surveys.csv*, and *combined.csv*.
 
 ### Requirements
 
@@ -77,7 +80,3 @@ To most effectively use these materials, please make sure to install everything
 {% endif %}
 
 <p><strong>Twitter</strong>: @datacarpentry</p>
-
-
-
-

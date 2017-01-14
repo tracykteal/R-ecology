@@ -2,28 +2,24 @@
 if (! file.exists("data")) dir.create("data")
 
 if (!file.exists("data/surveys.csv")) {
-    download.file("http://files.figshare.com/1919744/surveys.csv",
+    download.file("https://ndownloader.figshare.com/files/2292172",
                   "data/surveys.csv")
 }
 if (!file.exists("data/species.csv")) {
-    download.file("http://files.figshare.com/1919741/species.csv",
+    download.file("https://ndownloader.figshare.com/files/3299483",
                   "data/species.csv")
 }
-if (!file.exists("data/plot.csv")) {
-    download.file("http://files.figshare.com/1919738/plots.csv",
+if (!file.exists("data/plots.csv")) {
+    download.file("https://ndownloader.figshare.com/files/3299474",
                   "data/plots.csv")
 }
 if (!file.exists("data/portal_data_joined.csv")) {
-    if (!require("curl")) {
-      install.packages("curl")
-    }
-  library("curl")
-  curl_download("https://dl.dropboxusercontent.com/u/22808457/portal_data_joined.csv",
-                "data/portal_data_joined.csv")
+    download.file("https://ndownloader.figshare.com/files/2292169",
+                  "data/portal_data_joined.csv")
 }
 
 if (!file.exists("data/portal_mammals.sqlite")) {
-    download.file("http://files.figshare.com/1919743/portal_mammals.sqlite",
+    download.file("https://ndownloader.figshare.com/files/2292171",
                   "data/portal_mammals.sqlite")
 }
 
